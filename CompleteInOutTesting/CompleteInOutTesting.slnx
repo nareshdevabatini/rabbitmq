@@ -3,9 +3,8 @@
     <Project Path="BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj" Id="6fc98d81-8ed0-47fa-b0f9-03d2d94c87d2" />
     <Project Path="BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj" />
   </Folder>
-  <Folder Name="/Labs/" />
-  <Folder Name="/Labs/RabbitMqTopologyDemo/">
-    <Project Path="../Labs/RabbitMqTopologyDemo/RabbitMqTopologyDemo/RabbitMqTopologyDemo.csproj" Id="cd6dd87f-5e19-40a1-90fe-edba5de4d60f" />
+  <Folder Name="/Labs/">
+    <Project Path="Labs/RabbitMqTopologyDemo/RabbitMqTopologyDemo/RabbitMqTopologyDemo.csproj" Id="cd6dd87f-5e19-40a1-90fe-edba5de4d60f" />
   </Folder>
   <Folder Name="/Services/">
     <Project Path="Services/EmployeeService/EmployeeService.csproj" />

@@ -15,6 +15,14 @@ services:
     depends_on:
       - distributedcache
 
+  orderservice:
+    image: ${DOCKER_REGISTRY-}orderservice
+    build:
+      context: .
+      dockerfile: Services/OrderService/Dockerfile
+    depends_on:
+      - messagebroker
+
   distributedcache:
     image: redis:latest
     container_name: distributedcache

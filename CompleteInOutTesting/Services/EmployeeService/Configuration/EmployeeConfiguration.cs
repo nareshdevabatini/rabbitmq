@@ -2,9 +2,9 @@
 
 namespace EmployeeService.Configuration;
 
-public class EmployeeConfiguration:IEntityTypeConfiguration<Models.Employee>
+public class EmployeeConfiguration:IEntityTypeConfiguration<Employee>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Models.Employee> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Employee> builder)
     {
         builder.HasKey(e => e.Id);
         builder.Property(e => e.FirstName).IsRequired().HasMaxLength(50);

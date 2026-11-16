@@ -1,4 +1,3 @@
-
 services:
   employeeservice:
     environment:
@@ -35,6 +34,26 @@ services:
     ports:
       - "8082:8080"
       - "8083:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  orderservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__OrderDb=Data Source=orders.db
+      - MessageBroker__Host=amqp://messagebroker:5672
+      - MessageBroker__UserName=ecommerce
+      - MessageBroker__Password=ecommerce123
+    depends_on:
+      - messagebroker
+    ports:
+      - "8084:8080"
+      - "8085:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
