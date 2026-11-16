@@ -1,0 +1,56 @@
+
+services:
+  employeeservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Redis=distributedcache:6379
+      - MessageBroker__Host=amqp://messagebroker:5672
+      - MessageBroker__UserName=ecommerce
+      - MessageBroker__Password=ecommerce123
+    depends_on:
+      - distributedcache
+      - messagebroker
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  productservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - MessageBroker__Host=amqp://messagebroker:5672
+      - MessageBroker__UserName=ecommerce
+      - MessageBroker__Password=ecommerce123
+    depends_on:
+      - distributedcache
+      - messagebroker
+    ports:
+      - "8082:8080"
+      - "8083:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  distributedcache:
+    ports:
+      - "6379:6379"
+
+  messagebroker:
+    container_name: messagebroker
+    environment:
+      - RABBITMQ_DEFAULT_USER=ecommerce
+      - RABBITMQ_DEFAULT_PASS=ecommerce123
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"

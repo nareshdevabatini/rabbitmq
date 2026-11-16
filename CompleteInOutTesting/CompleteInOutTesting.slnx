@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj" Id="6fc98d81-8ed0-47fa-b0f9-03d2d94c87d2" />
+    <Project Path="BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Services/EmployeeService/EmployeeService.csproj" />
+    <Project Path="Services/ProductService/ProductService.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
