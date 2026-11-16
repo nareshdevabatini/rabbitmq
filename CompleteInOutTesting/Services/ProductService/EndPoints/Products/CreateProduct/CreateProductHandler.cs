@@ -1,25 +1,41 @@
-﻿using BuildingBlocks.CQRS;
+using System.Text.Json;
+using BuildingBlocks.CQRS;
 using BuildingBlocks.Messaging.Contracts.EventBusMessages;
-using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using ProductService.Infrastructure;
 using ProductService.Model;
-using ProductService.Repository;
+using ProductService.Outbox;
 
 namespace ProductService.EndPoints.Products.CreateProduct;
 
 public record ProductCommand(Product Product) : ICommand<ProductResult>;
 public record ProductResult(bool IsSuccess);
-public class CreateProductCommandHandler(IProductRepository _repository, IPublishEndpoint publishEndpoint) : ICommandHandler<ProductCommand, ProductResult>
+
+public class CreateProductCommandHandler(ProductDbContext dbContext)
+    : ICommandHandler<ProductCommand, ProductResult>
 {
-    public async Task<ProductResult> Handle(ProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductResult> Handle(
+        ProductCommand request,
+        CancellationToken cancellationToken)
     {
-        await _repository.AddProduct(request.Product, cancellationToken);
-        if (request.Product.Id <= 0)
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        dbContext.Products.Add(request.Product);
+        await dbContext.SaveChangesAsync(cancellationToken); // Assigns Product.Id inside the transaction.
+
+        var integrationEvent = new AddProductEvent(request.Product.Id);
+
+        dbContext.OutboxMessages.Add(new OutboxMessage
         {
-            return new ProductResult(true);
-        }
-        var eventMessage = new AddProductEvent(request.Product.Id);
-        await publishEndpoint.Publish(eventMessage, cancellationToken);
+            Id = Guid.NewGuid(),
+            MessageType = nameof(AddProductEvent),
+            Payload = JsonSerializer.Serialize(integrationEvent),
+            CreatedAtUtc = DateTime.UtcNow
+        });
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
         return new ProductResult(true);
     }
 }
-

@@ -17,6 +17,10 @@ public static class Extension
             if (assembly != null)
                 config.AddConsumers(assembly);
 
+            config.AddConfigureEndpointsCallback((context, name, endpoint) =>
+            {
+                endpoint.UseStandardTransientRetry();
+            });
             config.UsingRabbitMq((context, configurator) =>
             {
                 configurator.Host(new Uri(configuration["MessageBroker:Host"]!), host =>

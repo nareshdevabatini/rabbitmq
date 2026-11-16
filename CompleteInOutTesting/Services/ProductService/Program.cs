@@ -1,9 +1,10 @@
 using BuildingBlocks.ExceptionHandling.Extension;
 using BuildingBlocks.ExceptionHandling.Handler;
+using BuildingBlocks.Messaging.Configuration;
 using Carter;
 using Microsoft.EntityFrameworkCore;
+using ProductService.Outbox;
 using ProductService.Repository;
-using BuildingBlocks.Messaging.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<ProductService.Infrastructure.ProductDbContext>(op
 });
 //MassTransit 
 builder.Services.AddMessageBroker(builder.Configuration, assembly);
+builder.Services.AddHostedService<ProductOutboxDispatcher>();
 var app = builder.Build();
 
 app.MapCarter();

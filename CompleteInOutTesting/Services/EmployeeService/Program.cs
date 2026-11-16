@@ -1,9 +1,11 @@
 
+using BuildingBlocks.Messaging.Configuration;
 using Carter;
 using EmployeeService.Infrastruture;
+using EmployeeService.Messaging;
 using EmployeeService.Respository;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using BuildingBlocks.Messaging.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add services to the container.
@@ -16,7 +18,7 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.Decorate<IEmployeeRepository, CachedEmployeeRepository>();
-
+builder.Services.AddHostedService<EmployeeOutboxDispatcher>();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis")!;
@@ -32,6 +34,19 @@ builder.Services.AddDbContext<EmployeeDBContext>(options =>
 });
 
 var app = builder.Build();
+
+//app.MapPost("/retry-demo", async (
+//    RetryDemoRequest request,
+//    IPublishEndpoint publishEndpoint,
+//    CancellationToken cancellationToken) =>
+//{
+//    var messageId = Guid.NewGuid();
+//    await publishEndpoint.Publish(
+//        new TransientFailureDemo(messageId, request.FailFirstAttempts),
+//        cancellationToken);
+
+//    return Results.Accepted(value: new { messageId });
+//});
 
 // Configure the HTTP request pipeline.
 app.MapCarter();
